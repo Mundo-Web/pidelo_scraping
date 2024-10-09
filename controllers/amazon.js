@@ -26,7 +26,7 @@ class AmazonController {
 
     await page.goto(AMAZON_URL_QUERY
       .replace('{query}', query)
-    .replace('{page}', pagination ?? 1))
+      .replace('{page}', pagination ?? 1))
 
     const results = await page.evaluate(() => {
       const results = []
@@ -36,19 +36,27 @@ class AmazonController {
         const uuid = e.getAttribute('data-uuid')
         const img = e.querySelector('.s-image').src
         const name = e.querySelector('[data-cy="title-recipe"] h2').textContent
+        const details = e.querySelector('[data-cy="title-recipe"] h2 a').getAttribute('href')
         const price = e.querySelector('.a-price-whole')?.textContent
         const fraction = e.querySelector('.a-price-fraction')?.textContent
+        const colors = [...e.querySelectorAll('.s-color-swatch-inner-circle-fill')].map(e => {
+          return e.style.backgroundColor ?? '#fff'
+        })
         if (!price) return
         results.push({
-          code, uuid, img, name,
+          code, uuid, img, name, details, colors,
           price: Number(`${price}${fraction}`)
         })
       })
-      return results
+      return results.map(x => ({...x, currency: 'USD'}))
     })
 
     await browser.close()
     res.json(results)
+  }
+
+  static details = async (req, res) => {
+
   }
 }
 
