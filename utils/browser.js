@@ -3,7 +3,7 @@ import { launch } from "puppeteer";
 class Browser {
   static page = async () => {
     const browser = await launch({
-      headless: false,
+      headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
